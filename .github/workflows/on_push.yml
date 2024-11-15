@@ -8,7 +8,7 @@ jobs:
       - instance-size:small
     steps:
       - uses: hashicorp/setup-terraform@v3
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/configure-aws-credentials@v4.0.2
         with: 
           role-to-assume: arn:aws:iam::874500785305:role/codebuild-service-role
@@ -19,6 +19,6 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/dev.config 
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var-file=config/dev.tfvars
+        run: terraform -chdir=./terraform plan -var enviroment=${{ github.branch }}
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var-file=config/dev.tfvars -auto-approve
+        run: terraform -chdir=./terraform apply -var enviroment=${{ github.branch }} -auto-approve
