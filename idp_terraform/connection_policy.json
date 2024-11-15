@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "codestar-connections:GetConnectionToken",
+                "codestar-connections:GetConnection",
+                "codeconnections:GetConnectionToken",
+                "codeconnections:GetConnection",
+                "codeconnections:UseConnection"
+            ],
+            "Resource": [
+                "arn:aws:codestar-connections:us-east-1:705740530616:connection/df8b9ea8-c270-4881-a0ab-8a956a5170ad",
+                "arn:aws:codeconnections:us-east-1:705740530616:connection/df8b9ea8-c270-4881-a0ab-8a956a5170ad"
+            ]
+        }
+    ]
+}
