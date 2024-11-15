@@ -1,7 +1,7 @@
-name: ND On Push Workflow
+name: Global On Push Workflow
 on: [push]
 jobs:
-  Terraform-Apply-On-Push:
+  Run_Terraform:
     runs-on:
       - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
       - image:arm-3.0
