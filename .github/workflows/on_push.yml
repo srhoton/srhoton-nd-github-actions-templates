@@ -1,5 +1,5 @@
 name: Global On Push Workflow
-on: [push]
+on: [workflow-call]
 jobs:
   Run_Terraform:
     runs-on:
