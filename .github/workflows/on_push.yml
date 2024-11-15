@@ -19,6 +19,6 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/dev.config 
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var enviroment=${{ github.branch }}
+        run: terraform -chdir=./terraform plan -var environment=${{ github.branch }}
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var enviroment=${{ github.branch }} -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=${{ github.branch }} -auto-approve
