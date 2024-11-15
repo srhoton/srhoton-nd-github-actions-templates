@@ -1,5 +1,11 @@
 name: Global On Push Workflow
-on: [workflow_call]
+on: 
+  workflow_call:
+    inputs:
+      environment:
+        description: 'The environment to deploy to'
+        required: true
+        type: string
 jobs:
   Run_Terraform:
     runs-on:
@@ -19,6 +25,6 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/dev.config 
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var environment=${{ github.branch }}
+        run: terraform -chdir=./terraform plan -var environment=${{ inputs.environment }}
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var environment=${{ github.branch }} -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=${{ inputs.environment }} -auto-approve
