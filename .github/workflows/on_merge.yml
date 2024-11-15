@@ -7,7 +7,7 @@ jobs:
       - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
       - image:arm-3.0
       - instance-size:small
-    environment: test
+    environment: dev
     steps:
       - uses: hashicorp/setup-terraform@v3
       - uses: actions/checkout@v4
@@ -20,6 +20,8 @@ jobs:
         run: aws sts get-caller-identity
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/dev.config 
+      - name: Terraform Workspace Select
+        run: terraform -chdir=./terraform workspace select dev || terraform -chdir=./terraform workspace new dev
       - name: Terraform Plan
         run: terraform -chdir=./terraform plan -var environment=dev 
       - name: Terraform Apply
@@ -29,6 +31,7 @@ jobs:
       - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
       - image:arm-3.0
       - instance-size:small
+    environment: test
     steps:
       - uses: hashicorp/setup-terraform@v3
       - uses: actions/checkout@v4
@@ -41,6 +44,8 @@ jobs:
         run: aws sts get-caller-identity
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/test.config 
+      - name: Terraform Workspace Select
+        run: terraform -chdir=./terraform workspace select test || terraform -chdir=./terraform workspace new test
       - name: Terraform Plan
         run: terraform -chdir=./terraform plan -var environment=test
       - name: Terraform Apply
