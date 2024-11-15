@@ -1,0 +1,49 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DevAccess",
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole",
+                "sts:TagSession"
+            ],
+            "Resource": [
+                "arn:aws:iam::874500785305:role/codebuild-service-role"
+            ]
+        },
+        {
+            "Sid": "TestAccess",
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole",
+                "sts:TagSession"
+            ],
+            "Resource": [
+                "arn:aws:iam::541179526067:role/codebuild-service-role"
+            ]
+        },
+        {
+            "Sid": "StageAccess",
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole",
+                "sts:TagSession"
+            ],
+            "Resource": [
+                "arn:aws:iam::198951851865:role/codebuild-service-role"
+            ]
+        },
+        {
+            "Sid": "ProdAccess",
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole",
+                "sts:TagSession"
+            ],
+            "Resource": [
+                "arn:aws:iam::143007488490:role/codebuild-service-role"
+            ]
+        }
+    ]
+}
