@@ -26,7 +26,7 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/dev.config 
       - name: Terraform Workspace Select
-        run: terraform -chdir=./terraform workspace select ${{ inputs.branch }} || terraform -chdir ./terraform workspace new ${{ inputs.branch }}
+        run: terraform -chdir=./terraform workspace select ${{ inputs.branch }} || terraform -chdir=./terraform workspace new ${{ inputs.branch }}
       - name: Terraform Plan
         run: terraform -chdir=./terraform plan -var environment=${{ inputs.branch }}
       - name: Terraform Apply
