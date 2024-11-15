@@ -1,0 +1,46 @@
+name: Global On Push Workflow
+on: 
+  workflow_call:
+jobs:
+  Run_Terraform-Dev:
+    runs-on:
+      - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
+      - image:arm-3.0
+      - instance-size:small
+    steps:
+      - uses: hashicorp/setup-terraform@v3
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4.0.2
+        with: 
+          role-to-assume: arn:aws:iam::874500785305:role/codebuild-service-role
+          role-session-name: AssumeRoleSession
+          aws-region: us-east-1
+      - name: STS Get Caller Identity
+        run: aws sts get-caller-identity
+      - name: Terraform Init
+        run: terraform -chdir=./terraform init --backend-config=config/dev.config 
+      - name: Terraform Plan
+        run: terraform -chdir=./terraform plan -var environment=dev 
+      - name: Terraform Apply
+        run: terraform -chdir=./terraform apply -var environment=dev -auto-approve
+  Run_Terraform-Test:
+    runs-on:
+      - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
+      - image:arm-3.0
+      - instance-size:small
+    steps:
+      - uses: hashicorp/setup-terraform@v3
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4.0.2
+        with: 
+          role-to-assume: arn:aws:iam::541179526067:role/codebuild-service-role
+          role-session-name: AssumeRoleSession
+          aws-region: us-east-1
+      - name: STS Get Caller Identity
+        run: aws sts get-caller-identity
+      - name: Terraform Init
+        run: terraform -chdir=./terraform init --backend-config=config/test.config 
+      - name: Terraform Plan
+        run: terraform -chdir=./terraform plan -var environment=test
+      - name: Terraform Apply
+        run: terraform -chdir=./terraform apply -var environment=test -auto-approve
