@@ -1,0 +1,26 @@
+name: Test ECS Redeploy Workflow
+on: 
+  workflow_call:
+    inputs:
+      repository:
+        description: 'The repository to run the workflow on'
+        required: true
+        type: string
+jobs:
+  Run_Redeploy:
+    runs-on:
+      - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
+      - image:arm-3.0
+      - instance-size:small
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4.0.2
+        with: 
+          role-to-assume: arn:aws:iam::541179526067:role/codebuild-service-role
+          role-session-name: AssumeRoleSession
+          aws-region: us-east-1
+      - name: STS Get Caller Identity
+        run: aws sts get-caller-identity
+      - name: ECS Force Redeploy
+        run: aws ecs update-service --cluster ${{ inputs.repository }}-test --service ${{ inputs.repository }} --force-new-deployment --region us-east-1
