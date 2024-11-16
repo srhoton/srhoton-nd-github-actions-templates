@@ -1,9 +1,13 @@
-name: Global On Branch Delete Workflow
+name: Global On Delete Workflow
 on: 
   workflow_call:
     inputs:
       branch:
-        description: 'The branch that is being deleted'
+        description: 'The branch that is being deployed'
+        required: true
+        type: string
+      repository:
+        description: 'The repository that is being deployed'
         required: true
         type: string
 jobs:
@@ -26,6 +30,8 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/dev.config 
       - name: Terraform Workspace Select
-        run: terraform -chdir=./terraform workspace select ${{ inputs.branch }} || terraform -chdir=./terraform workspace new ${{ inputs.branch }}
-      - name: Terraform  Destroy
+        run: terraform -chdir=./terraform workspace select ${{ inputs.repository }}-${{ inputs.branch }} || terraform -chdir=./terraform workspace new ${{ inputs.repository}}-${{ inputs.branch }}
+      - name: Terraform Plan
+        run: terraform -chdir=./terraform plan -var environment=${{ inputs.branch }} -var repository=${{ inputs.repository }}
+      - name: Terraform Destroy
         run: terraform -chdir=./terraform destroy -auto-approve
