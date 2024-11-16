@@ -21,10 +21,14 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
       - uses: actions/checkout@v4
       - uses: aws-actions/configure-aws-credentials@v4.0.2
-      - uses: aws-actions/amazon-ecr-login@v2
         with: 
           role-to-assume: arn:aws:iam::874500785305:role/codebuild-service-role
           role-session-name: AssumeRoleSession
+          aws-region: us-east-1
+      - uses: aws-actions/amazon-ecr-login@v2
+        with: 
+          role-to-assume: arn:aws:iam::874500785305:role/codebuild-service-role
+          role-session-name: AssumeEcrRoleSession
           aws-region: us-east-1
       - name: STS Get Caller Identity
         run: aws sts get-caller-identity
