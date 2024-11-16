@@ -23,4 +23,5 @@ jobs:
       - name: STS Get Caller Identity
         run: aws sts get-caller-identity
       - name: ECS Force Redeploy
-        run: aws ecs update-service --cluster ${{ inputs.repository }}-test --service ${{ inputs.repository }} --force-new-deployment --region us-east-1
+        #run: aws ecs update-service --cluster ${{ inputs.repository }}-test --service ${{ inputs.repository }} --force-new-deployment --region us-east-1
+        run: aws ecs update-service --cluster ecs-cluster-test --service ecs-service-test --force-new-deployment --region us-east-1
