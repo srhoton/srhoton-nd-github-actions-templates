@@ -1,6 +1,11 @@
 name: Global On Tag Workflow
 on: 
   workflow_call:
+    inputs:
+      repository:
+        description: 'The repository that is being deployed'
+        required: true
+        type: string
 jobs:
   Run_Terraform-Stage:
     runs-on:
@@ -21,11 +26,11 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/stage.config 
       - name: Terraform Workspace Select
-        run: terraform -chdir=./terraform workspace select stage || terraform -chdir=./terraform workspace new stage
+        run: terraform -chdir=./terraform workspace select ${{ inputs.repository }}-stage || terraform -chdir=./terraform workspace new ${{ inputs.repository }}-stage
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var environment=stage 
+        run: terraform -chdir=./terraform plan -var environment=stage -var repository=${{ inputs.repository }}
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var environment=stage -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=stage -var repository=${{ inputs.repository }} -auto-approve
   Run_Terraform-Prod:
     runs-on:
       - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
@@ -45,8 +50,8 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/prod.config 
       - name: Terraform Workspace Select
-        run: terraform -chdir=./terraform workspace select prod || terraform -chdir=./terraform workspace new prod
+        run: terraform -chdir=./terraform workspace select ${{ inputs.repository }}-prod || terraform -chdir=./terraform workspace new ${{ inputs.repository }}-prod
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var environment=prod
+        run: terraform -chdir=./terraform plan -var environment=prod -var repository=${{ inputs.repository }}
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var environment=prod -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=prod -var repository=${{ inputs.repository }} -auto-approve
