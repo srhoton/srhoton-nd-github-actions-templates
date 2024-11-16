@@ -23,5 +23,7 @@ jobs:
           aws-region: us-east-1
       - name: STS Get Caller Identity
         run: aws sts get-caller-identity
+      - name: Terraform Init
+        run: terraform -chdir=./terraform init --backend-config=config/dev.config
       - name: Terraform Validate
         run: terraform -chdir=./terraform validate 
