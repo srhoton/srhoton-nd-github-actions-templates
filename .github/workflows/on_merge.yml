@@ -1,4 +1,4 @@
-name: Global On Push Workflow
+name: Global On Merge Workflow
 on: 
   workflow_call:
     inputs:
@@ -30,7 +30,7 @@ jobs:
       - name: Terraform Plan
         run: terraform -chdir=./terraform plan -var environment=dev -var repository=${{ inputs.repository }}
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var environment=dev -var repository=${{ inputs.repository }}  -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=dev -var repository=${{ inputs.repository }} -auto-approve
   Run_Terraform-Test:
     runs-on:
       - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
@@ -53,5 +53,5 @@ jobs:
         run: terraform -chdir=./terraform workspace select ${{ inputs.repository }}-test || terraform -chdir=./terraform workspace new ${{ inputs.repository }}-test
       - name: Terraform Plan
         run: terraform -chdir=./terraform plan -var environment=test -var repository=${{ inputs.repository }}
-       - name: Terraform Apply
+      - name: Terraform Apply
         run: terraform -chdir=./terraform apply -var environment=test -var repository=${{ inputs.repository }} -auto-approve
