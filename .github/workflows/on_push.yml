@@ -34,12 +34,13 @@ jobs:
         run: aws sts get-caller-identity
       - name: Build, tag, and push docker image to Amazon ECR Public
         env:
-          REGISTRY: 705740530616.dkr.ecr.us-east-1.amazonaws.com/nd-github-actions-app
+          REGISTRY: 705740530616.dkr.ecr.us-east-1.amazonaws.com
           REGISTRY_ALIAS: nd-github-actions-app
           REPOSITORY: ${{ inputs.repository }}
           IMAGE_TAG: ${{ inputs.branch }}
         run: |
           docker build -t $REPOSITORY:$IMAGE_TAG .
+          docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/dev.config 
