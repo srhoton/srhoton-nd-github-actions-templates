@@ -45,9 +45,9 @@ jobs:
       - name: Terraform Workspace Select
         run: terraform -chdir=./terraform workspace select ${{ inputs.repository }}-stage || terraform -chdir=./terraform workspace new ${{ inputs.repository }}-stage
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var environment=${{ inputs.tag }}  -var repository=${{ inputs.repository }} -var tag=${{ inputs.tag }}
+        run: terraform -chdir=./terraform plan -var environment=stage  -var repository=${{ inputs.repository }} -var tag=${{ inputs.tag }}
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var environment=${{ inputs.tag }}  -var repository=${{ inputs.repository }} -var tag=${{ inputs.tag }} -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=stage  -var repository=${{ inputs.repository }} -var tag=${{ inputs.tag }} -auto-approve
   Run_Terraform-Prod:
     needs: Run_Terraform-Stage
     runs-on:
