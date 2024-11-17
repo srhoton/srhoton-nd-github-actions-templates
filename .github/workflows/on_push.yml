@@ -10,6 +10,10 @@ on:
         description: 'The repository that is being deployed'
         required: true
         type: string
+      tag:
+        description: 'The tag that is being deployed'
+        required: false
+        type: string
 jobs:
   Build_Image_Run_Terraform:
     runs-on:
@@ -35,7 +39,7 @@ jobs:
           REGISTRY: 705740530616.dkr.ecr.us-east-1.amazonaws.com
           REGISTRY_ALIAS: nd-github-actions-app
           REPOSITORY: ${{ inputs.repository }}
-          IMAGE_TAG: ${{ inputs.branch }}
+          IMAGE_TAG: ${{ inputs.tag }}
         run: |
           docker build -t $REPOSITORY:$IMAGE_TAG .
           docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
