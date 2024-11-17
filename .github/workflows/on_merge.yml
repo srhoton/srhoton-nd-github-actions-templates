@@ -21,8 +21,23 @@ jobs:
           role-to-assume: arn:aws:iam::874500785305:role/codebuild-service-role
           role-session-name: AssumeRoleSession
           aws-region: us-east-1
+      - uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: "705740530616"
       - name: STS Get Caller Identity
         run: aws sts get-caller-identity
+      - name: Build, tag, and push docker image to Amazon ECR Public
+        env:
+          REGISTRY: 705740530616.dkr.ecr.us-east-1.amazonaws.com
+          REGISTRY_ALIAS: nd-github-actions-app
+          REPOSITORY: ${{ inputs.repository }}
+          IMAGE_TAG: dev
+        run: |
+          docker build -t $REPOSITORY:$IMAGE_TAG .
+          docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:dev
+          docker push $REGISTRY/$REPOSITORY:dev
+          docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:test
+          docker push $REGISTRY/$REPOSITORY:test
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/dev.config 
       - name: Terraform Workspace Select
@@ -32,6 +47,7 @@ jobs:
       - name: Terraform Apply
         run: terraform -chdir=./terraform apply -var environment=dev -var repository=${{ inputs.repository }} -auto-approve
   Run_Terraform-Test:
+    needs: Run_Terraform-Dev
     runs-on:
       - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
       - image:arm-3.0

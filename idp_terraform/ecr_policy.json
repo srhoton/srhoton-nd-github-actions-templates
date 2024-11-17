@@ -1,0 +1,32 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowPushPull",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "arn:aws:iam::874500785305:role/codebuild-service-role",
+                    "arn:aws:iam::541179526067:role/codebuild-service-role",
+                    "arn:aws:iam::198951851865:role/codebuild-service-role",
+                    "arn:aws:iam::143007488490:role/codebuild-service-role",
+                    "arn:aws:iam::874500785305:role/ecs-execution-role",
+                    "arn:aws:iam::541179526067:role/ecs-execution-role",
+                    "arn:aws:iam::198951851865:role/ecs-execution-role",
+                    "arn:aws:iam::143007488490:role/ecs-execution-role"
+                ]
+            },
+            "Action": [
+                "ecr:BatchGetImage",
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:CompleteLayerUpload",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:InitiateLayerUpload",
+                "ecr:PutImage",
+                "ecr:UploadLayerPart"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
