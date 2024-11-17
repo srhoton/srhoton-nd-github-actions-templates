@@ -27,10 +27,7 @@ jobs:
           aws-region: us-east-1
       - uses: aws-actions/amazon-ecr-login@v2
         with: 
-          role-to-assume: arn:aws:iam::874500785305:role/codebuild-service-role
-          role-session-name: AssumeEcrRoleSession
           registries: "705740530616"
-          aws-region: us-east-1
       - name: STS Get Caller Identity
         run: aws sts get-caller-identity
       - name: Build, tag, and push docker image to Amazon ECR Public
