@@ -2,6 +2,10 @@ name: Global On Tag Workflow
 on: 
   workflow_call:
     inputs:
+      tag:
+        description: 'The tag that is being deployed'
+        required: true
+        type: string
       repository:
         description: 'The repository that is being deployed'
         required: true
@@ -21,17 +25,30 @@ jobs:
           role-to-assume: arn:aws:iam::198951851865:role/codebuild-service-role
           role-session-name: AssumeRoleSession
           aws-region: us-east-1
+      - uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: "705740530616"
       - name: STS Get Caller Identity
         run: aws sts get-caller-identity
+      - name: Build, tag, and push docker image to Amazon ECR Public
+        env:
+          REGISTRY: 705740530616.dkr.ecr.us-east-1.amazonaws.com
+          REGISTRY_ALIAS: nd-github-actions-app
+          REPOSITORY: ${{ inputs.repository }}
+          IMAGE_TAG: ${{ inputs.tag }}
+        run: |
+          docker build -t $REPOSITORY:$IMAGE_TAG .
+          docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/stage.config 
       - name: Terraform Workspace Select
         run: terraform -chdir=./terraform workspace select ${{ inputs.repository }}-stage || terraform -chdir=./terraform workspace new ${{ inputs.repository }}-stage
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var environment=stage -var repository=${{ inputs.repository }}
+        run: terraform -chdir=./terraform plan -var environment=${{ inputs.tag }}  -var repository=${{ inputs.repository }}
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var environment=stage -var repository=${{ inputs.repository }} -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=${{ inputs.tag }}  -var repository=${{ inputs.repository }} -auto-approve
   Run_Terraform-Prod:
+    needs: Run_Terraform-Stage
     runs-on:
       - codebuild-github_project-${{ github.run_id }}-${{ github.run_attempt }}
       - image:arm-3.0
@@ -52,6 +69,6 @@ jobs:
       - name: Terraform Workspace Select
         run: terraform -chdir=./terraform workspace select ${{ inputs.repository }}-prod || terraform -chdir=./terraform workspace new ${{ inputs.repository }}-prod
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var environment=prod -var repository=${{ inputs.repository }}
+        run: terraform -chdir=./terraform plan -var environment=${{ inputs.tag }} -var repository=${{ inputs.repository }}
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var environment=prod -var repository=${{ inputs.repository }} -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=${{ inputs.tag }} -var repository=${{ inputs.repository }} -auto-approve
