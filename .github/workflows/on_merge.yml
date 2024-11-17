@@ -31,21 +31,19 @@ jobs:
           REGISTRY: 705740530616.dkr.ecr.us-east-1.amazonaws.com
           REGISTRY_ALIAS: nd-github-actions-app
           REPOSITORY: ${{ inputs.repository }}
-          IMAGE_TAG: dev
+          IMAGE_TAG: latest
         run: |
           docker build -t $REPOSITORY:$IMAGE_TAG .
           docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:dev
-          docker push $REGISTRY/$REPOSITORY:dev
-          docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:test
-          docker push $REGISTRY/$REPOSITORY:test
+          docker push $REGISTRY/$REPOSITORY:latest
       - name: Terraform Init
         run: terraform -chdir=./terraform init --backend-config=config/dev.config 
       - name: Terraform Workspace Select
         run: terraform -chdir=./terraform workspace select ${{ inputs.repository }}-dev || terraform -chdir=./terraform workspace new ${{ inputs.repository }}-dev
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var environment=dev -var repository=${{ inputs.repository }}
+        run: terraform -chdir=./terraform plan -var environment=dev -var repository=${{ inputs.repository }} -var tag=latest
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var environment=dev -var repository=${{ inputs.repository }} -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=dev -var repository=${{ inputs.repository }} -var tag=latest -auto-approve
   Run_Terraform-Test:
     needs: Run_Terraform-Dev
     runs-on:
@@ -68,6 +66,6 @@ jobs:
       - name: Terraform Workspace Select
         run: terraform -chdir=./terraform workspace select ${{ inputs.repository }}-test || terraform -chdir=./terraform workspace new ${{ inputs.repository }}-test
       - name: Terraform Plan
-        run: terraform -chdir=./terraform plan -var environment=test -var repository=${{ inputs.repository }}
+        run: terraform -chdir=./terraform plan -var environment=test -var repository=${{ inputs.repository }} -var tag=latest
       - name: Terraform Apply
-        run: terraform -chdir=./terraform apply -var environment=test -var repository=${{ inputs.repository }} -auto-approve
+        run: terraform -chdir=./terraform apply -var environment=test -var repository=${{ inputs.repository }} -var tag=latest -auto-approve
